@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FCS Filled Example</title>
+<style>
+  @page { size: 13.333in 7.5in; margin: 0; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:13.333in; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .slide { width:13.333in; height:7.5in; page-break-after:always; page-break-inside:avoid; overflow:hidden; position:relative; background:#fff; }
+  .slide:last-child { page-break-after:auto; }
+
+  /* Cover */
+  .cover { background:#1a3a5c; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff; }
+  .cover h1 { font-size:52pt; font-weight:800; }
+  .cover .sub { font-size:40pt; font-weight:700; color:#c8a84e; margin-top:4px; }
+  .cover .line { width:120px; height:4px; background:#c8a84e; margin:24px auto; border-radius:2px; }
+  .cover .tag { font-size:22pt; font-weight:600; color:#e0e0e0; }
+  .cover .desc { font-size:16pt; color:#b0b8c4; margin-top:16px; line-height:1.5; }
+  .cover .brand { font-size:14pt; color:#8899aa; margin-top:50px; font-weight:600; }
+  .cover .brand span { font-weight:400; color:#6a7a8a; }
+
+  /* Header */
+  .hdr { background:#1a3a5c; padding:14px 50px; display:flex; align-items:center; justify-content:space-between; height:60px; }
+  .hdr h2 { font-size:22pt; font-weight:700; color:#fff; }
+  .hdr .pg { font-size:15pt; font-weight:600; color:#c8a84e; }
+
+  /* Body */
+  .body { padding:24px 50px 16px; height:calc(7.5in - 60px - 24px); }
+
+  /* Form field styling */
+  .field { margin-bottom:16px; }
+  .field-label { font-size:13pt; font-weight:700; color:#1a3a5c; margin-bottom:4px; }
+  .field-label .req { color:#e53e3e; }
+  .field-hint { font-size:10.5pt; color:#718096; margin-bottom:4px; font-style:italic; }
+  .field-input { background:#f7fafc; border:1.5px solid #cbd5e0; border-radius:6px; padding:10px 14px; font-size:13pt; color:#2d3748; width:100%; line-height:1.4; }
+  .field-textarea { background:#f7fafc; border:1.5px solid #cbd5e0; border-radius:6px; padding:10px 14px; font-size:12pt; color:#2d3748; width:100%; line-height:1.5; min-height:60px; }
+
+  /* Checkboxes */
+  .cb-group { margin-bottom:14px; }
+  .cb-row { display:flex; align-items:center; gap:8px; padding:5px 12px; background:#f7fafc; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:3px; font-size:12.5pt; color:#2d3748; }
+  .cb-row.checked { background:#ebf8ff; border-color:#3182ce; }
+  .cb { width:18px; height:18px; border:2px solid #cbd5e0; border-radius:3px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .cb.on { background:#3182ce; border-color:#3182ce; color:#fff; font-size:12px; font-weight:700; }
+  .cb.off { background:#fff; }
+
+  /* Radio */
+  .radio-group { margin-bottom:14px; }
+  .radio-row { display:flex; align-items:center; gap:8px; padding:6px 12px; background:#f7fafc; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:3px; font-size:12.5pt; color:#2d3748; }
+  .radio-row.selected { background:#ebf8ff; border-color:#3182ce; }
+  .rd { width:18px; height:18px; border:2px solid #cbd5e0; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .rd.on { border-color:#3182ce; }
+  .rd.on::after { content:''; width:10px; height:10px; background:#3182ce; border-radius:50%; }
+
+  /* Two columns */
+  .cols { display:flex; gap:30px; }
+  .col { flex:1; }
+
+  /* Conditional highlight */
+  .cond-box { border-left:4px solid #c8a84e; background:#fffff0; padding:10px 14px; margin-top:4px; border-radius:0 6px 6px 0; }
+  .cond-label { font-size:11pt; font-weight:700; color:#1a3a5c; margin-bottom:4px; }
+
+  /* Section title within slide */
+  .sec-title { font-size:16pt; font-weight:700; color:#1a3a5c; margin-bottom:4px; }
+  .sec-desc { font-size:11.5pt; color:#718096; margin-bottom:14px; }
+
+  /* Upload area */
+  .upload-box { background:#f7fafc; border:2px dashed #cbd5e0; border-radius:8px; padding:16px; text-align:center; color:#a0aec0; font-size:11.5pt; margin-bottom:10px; }
+  .upload-icon { font-size:24pt; margin-bottom:4px; }
+
+  /* Info callout */
+  .callout { border-left:4px solid #3182ce; background:#ebf8ff; padding:10px 14px; font-size:11.5pt; color:#2d3748; margin-bottom:12px; border-radius:0 6px 6px 0; }
+  .callout strong { color:#2b6cb0; }
+  .callout-warn { border-left-color:#e53e3e; background:#fff5f5; }
+  .callout-warn strong { color:#e53e3e; }
+  .callout-gold { border-left-color:#c8a84e; background:#fffff0; }
+  .callout-gold strong { color:#1a3a5c; }
+
+  /* Footer */
+  .ftr { position:absolute; bottom:0; left:0; right:0; padding:6px 50px; font-size:9pt; color:#a0aec0; display:flex; justify-content:space-between; border-top:1px solid #e2e8f0; }
+
+  /* Nav buttons (decorative) */
+  .nav-btns { display:flex; gap:10px; margin-top:12px; }
+  .btn-back { padding:8px 28px; border:1.5px solid #cbd5e0; border-radius:6px; font-size:12pt; color:#4a5568; background:#fff; font-weight:600; }
+  .btn-cont { padding:8px 50px; border:none; border-radius:6px; font-size:12pt; color:#fff; background:#1a3a5c; font-weight:700; }
+  .btn-submit { padding:8px 50px; border:none; border-radius:6px; font-size:12pt; color:#fff; background:#38a169; font-weight:700; }
+
+  /* Autosave badge */
+  .autosave { text-align:center; font-size:10pt; color:#38a169; margin-top:6px; }
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<div class="slide cover">
+  <h1>FCS Website Requirements</h1>
+  <div class="sub">Questionnaire</div>
+  <div class="line"></div>
+  <div class="tag">Filled Example</div>
+  <div class="desc">This document shows a filled example of the questionnaire.<br>Use it as a guide when completing your own form.</div>
+  <div class="brand">Miraloyd Global Consult Ltd<br><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 1 SLIDE 1: School Identity (top) ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 1 — School Identity</h2><div class="pg">Page 1 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">School Identity</div>
+    <div class="sec-desc">The foundation — who you are as an institution</div>
+
+    <div class="field">
+      <div class="field-label">Official school name (as registered) <span class="req">*</span></div>
+      <div class="field-input">Harmony Academy International</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">School levels currently offered <span class="req">*</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Creche / Daycare</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Pre-Nursery &amp; Nursery</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Primary (Basic 1–6)</div>
+        </div>
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Junior Secondary (JSS 1–3)</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Senior Secondary (SSS 1–3)</div>
+          <div class="cb-row"><span class="cb off"></span> Sixth Form / A-Levels / IB</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">School motto <span class="req">*</span></div>
+          <div class="field-input">Knowledge, Faith, Excellence</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Year established</div>
+          <div class="field-input">2005</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">In 2–3 sentences, what makes your school unique? <span class="req">*</span></div>
+      <div class="field-textarea">A leading co-educational school offering a blended Nigerian and British curriculum, with a strong emphasis on character development, STEM education, and extracurricular enrichment. Our students consistently achieve top results in WAEC, NECO, and Cambridge IGCSE examinations.</div>
+    </div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 1 SLIDE 2: School Identity (bottom) ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 1 — School Identity (continued)</h2><div class="pg">Page 1 of 8</div></div>
+  <div class="body">
+    <div class="field">
+      <div class="field-label">Curriculum &amp; examinations offered</div>
+      <div class="cols">
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Nigerian Curriculum (NERDC)</div>
+          <div class="cb-row"><span class="cb off"></span> British Curriculum</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> WAEC / NECO</div>
+        </div>
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Cambridge IGCSE / A-Levels</div>
+          <div class="cb-row"><span class="cb off"></span> International Baccalaureate (IB)</div>
+          <div class="cb-row"><span class="cb off"></span> Montessori (Early Years)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Any accreditations or regulatory approvals?</div>
+      <div class="field-hint">e.g., Approved by FCT Education Board, WAEC Centre, NTI accredited, etc.</div>
+      <div class="field-textarea">Approved by FCT Education Board. WAEC/NECO Centre. Cambridge International School. Member, Association of Private Educators in Nigeria (APEN).</div>
+    </div>
+
+    <div class="nav-btns">
+      <div class="btn-cont">Continue</div>
+    </div>
+    <div class="autosave">Your progress is saved automatically</div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 2: Branding ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 2 — Branding &amp; Visual Identity</h2><div class="pg">Page 2 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Branding &amp; Visual Identity</div>
+    <div class="sec-desc">Your school's look, feel, and first impression</div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Upload your school logo <span class="req">*</span></div>
+          <div class="field-hint">High-resolution preferred. PNG with transparent background is ideal.</div>
+          <div class="upload-box"><div class="upload-icon">📁</div>Tap to upload school logo<br><span style="font-size:10pt;">PNG, JPG, SVG, or PDF — Max 5 MB</span></div>
+          <div class="field-hint">If you don't have a logo yet, kindly skip — we can design one or work with your school colours.</div>
+        </div>
+        <div class="field">
+          <div class="field-label">School crest / emblem (if different from logo)</div>
+          <div class="upload-box"><div class="upload-icon">🛡️</div>Tap to upload crest or emblem<br><span style="font-size:10pt;">PNG, JPG, SVG, or PDF — Max 5 MB</span></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Official school colours <span class="req">*</span></div>
+          <div class="field-input">Royal Blue (#003366), Gold (#D4AF37), White (#FFFFFF)</div>
+        </div>
+        <div class="field">
+          <div class="field-label">What feel should the website give visitors? <span class="req">*</span></div>
+          <div class="radio-row selected"><span class="rd on"></span> Professional &amp; Academic</div>
+          <div class="radio-row"><span class="rd"></span> Warm &amp; Welcoming</div>
+          <div class="radio-row"><span class="rd"></span> Faith-centred &amp; Inspirational</div>
+          <div class="radio-row"><span class="rd"></span> Modern &amp; Dynamic</div>
+          <div class="radio-row"><span class="rd"></span> A blend of the above</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Are there any school websites you admire? Share 1–2 links</div>
+          <div class="field-hint">Nigerian or International — this helps us understand your taste.</div>
+          <div class="field-input" style="color:#a0aec0;">e.g., www.greenspringsschool.com, www.coronaschools.com</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-btns"><div class="btn-back">Back</div><div class="btn-cont">Continue</div></div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 3 SLIDE 1: Pages ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 3 — Website Pages &amp; Features</h2><div class="pg">Page 3 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Website Pages &amp; Features</div>
+    <div class="sec-desc">Select the pages and features your website should have</div>
+
+    <div class="field">
+      <div class="field-label">Which pages would you like on your website? <span class="req">*</span></div>
+      <div class="field-hint">Tick all that apply. We will advise on the best structure.</div>
+      <div class="cols">
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Home</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> About Us (History, Mission, Vision, Leadership)</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Academics (Curriculum, Programmes per Level)</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Admissions (Requirements, Process, Fees)</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Gallery (Photos &amp; Videos)</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> News &amp; Events</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Staff Directory / Our Team</div>
+          <div class="cb-row"><span class="cb off"></span> Student Life (Clubs, Sports, Activities)</div>
+          <div class="cb-row"><span class="cb off"></span> Chapel / Spiritual Life</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Facilities &amp; Campus Tour</div>
+        </div>
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Testimonials / Parent Reviews</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Downloads (Forms, Handbooks, Calendar)</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> School Calendar</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Contact Us</div>
+          <div class="cb-row"><span class="cb off"></span> Blog</div>
+          <div class="cb-row"><span class="cb off"></span> Alumni</div>
+          <div class="cb-row"><span class="cb off"></span> Careers / Work With Us</div>
+          <div class="cb-row"><span class="cb off"></span> Boarding (if applicable)</div>
+          <div class="cb-row"><span class="cb off"></span> PTA / Parents Portal</div>
+          <div class="cb-row"><span class="cb off"></span> Scholarships &amp; Financial Aid</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 3 SLIDE 2: Features ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 3 — Website Pages &amp; Features (continued)</h2><div class="pg">Page 3 of 8</div></div>
+  <div class="body">
+    <div class="field">
+      <div class="field-label">Any special features or integrations needed?</div>
+      <div class="cols">
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Contact / Inquiry Form</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Online Admissions Application</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> WhatsApp Chat Button</div>
+          <div class="cond-box">
+            <div class="cond-label">WhatsApp number:</div>
+            <div class="field-input">+234 803 601 2387</div>
+          </div>
+          <div class="cb-row checked" style="margin-top:8px;"><span class="cb on">&#10003;</span> Fee Payment Gateway</div>
+        </div>
+        <div class="col">
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Parent / Student Portal</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Result Checker</div>
+          <div class="cb-row"><span class="cb off"></span> E-Learning / CBT Integration</div>
+          <div class="cb-row"><span class="cb off"></span> Newsletter / Email Signup</div>
+          <div class="cb-row"><span class="cb off"></span> Live Chat</div>
+          <div class="cb-row"><span class="cb off"></span> Google Map / Directions</div>
+          <div class="cb-row"><span class="cb off"></span> Event Calendar</div>
+          <div class="cb-row"><span class="cb off"></span> Virtual Campus Tour (360°)</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-btns"><div class="btn-back">Back</div><div class="btn-cont">Continue</div></div>
+    <div class="autosave">Your progress is saved automatically</div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 4 SLIDE 1: Admissions ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 4 — Admissions &amp; Academics</h2><div class="pg">Page 4 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Admissions &amp; Academics</div>
+    <div class="sec-desc">How parents enrol and what the school offers</div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Briefly describe the admission process <span class="req">*</span></div>
+          <div class="field-hint">Step by step — from inquiry to enrolment</div>
+          <div class="field-textarea">Parents can apply online or visit the school. Admission process includes: (1) Completion of application form, (2) Entrance assessment in English and Mathematics, (3) Interview with the Head of School, (4) Payment of acceptance fee upon offer. Applications open from September to January each year.</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Should fee/tuition information appear on the website? <span class="req">*</span></div>
+          <div class="radio-row"><span class="rd"></span> Yes — show full fee structure</div>
+          <div class="radio-row"><span class="rd"></span> Yes — show fee ranges only</div>
+          <div class="radio-row selected"><span class="rd on"></span> No — parents should contact the school</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Key facilities</div>
+          <div class="field-hint">Select what the school has — these will be featured on the website</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Science Laboratory</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Computer / ICT Room</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Library</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Sports Field / Court</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Chapel / Assembly Hall</div>
+          <div class="cb-row"><span class="cb off"></span> Art / Music Room</div>
+          <div class="cb-row"><span class="cb off"></span> Cafeteria / Tuck Shop</div>
+          <div class="cb-row"><span class="cb off"></span> Sick Bay / School Nurse</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> School Bus / Transport</div>
+          <div class="cb-row"><span class="cb off"></span> Swimming Pool</div>
+          <div class="cb-row"><span class="cb off"></span> Boarding House</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> CCTV / Security</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Generator / Uninterrupted Power</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Playground / Recreation Area</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 4 SLIDE 2: Achievements ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 4 — Admissions &amp; Academics (continued)</h2><div class="pg">Page 4 of 8</div></div>
+  <div class="body">
+    <div class="field">
+      <div class="field-label">Notable achievements, awards, or results worth highlighting</div>
+      <div class="field-hint">e.g., WAEC/NECO results, inter-school competitions, special recognitions</div>
+      <div class="field-textarea">Our students have maintained a 98% pass rate in WAEC and NECO over the past 5 years. We are 3-time winners of the FCT Inter-School Science and Mathematics Olympiad. In 2024, our Cambridge IGCSE cohort achieved 85% distinction rate. The school was named Best Emerging School in Abuja by the Education Excellence Awards in 2023.</div>
+    </div>
+    <div class="nav-btns"><div class="btn-back">Back</div><div class="btn-cont">Continue</div></div>
+    <div class="autosave">Your progress is saved automatically</div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 5: Content & Assets ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 5 — Content, Images &amp; Brand Assets</h2><div class="pg">Page 5 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Content, Images &amp; Brand Assets</div>
+    <div class="sec-desc">The materials we need to build your website content</div>
+
+    <div class="callout callout-gold"><strong>Why we need these:</strong> High quality photos, documents, and brand materials enable us to create a professional website that truly represents your school. The more you provide, the better the final result.</div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Upload campus / school photos</div>
+          <div class="field-hint">Buildings, classrooms, facilities, events, students in activity. High resolution preferred.</div>
+          <div class="upload-box"><div class="upload-icon">🏫</div>Tap to upload school photos<br><span style="font-size:10pt;">PNG, JPG — Up to 10 files, max 5 MB each</span></div>
+        </div>
+        <div class="field">
+          <div class="field-label">Upload school documents</div>
+          <div class="field-hint">Prospectus, brochure, school handbook, admission form, letterhead</div>
+          <div class="upload-box"><div class="upload-icon">📄</div>Tap to upload documents<br><span style="font-size:10pt;">PDF, DOC, DOCX — Up to 5 files, max 5 MB each</span></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Do you have a large number of files to share?</div>
+          <div class="field-hint">Paste a Google Drive, Dropbox, or WeTransfer link below</div>
+          <div class="field-input" style="color:#a0aec0;">https://drive.google.com/drive/folders/...</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Do you have a school promotional video? <span class="req">*</span></div>
+          <div class="radio-row"><span class="rd"></span> Yes</div>
+          <div class="radio-row selected"><span class="rd on"></span> No</div>
+          <div class="radio-row"><span class="rd"></span> Not yet — but we plan to create one</div>
+          <div class="callout callout-gold" style="margin-top:6px; font-size:10.5pt;"><strong>If "Yes":</strong> A field appears to enter your video URL (YouTube, Vimeo, etc.)</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Will you provide the written content, or should we draft it? <span class="req">*</span></div>
+          <div class="radio-row"><span class="rd"></span> We will write the content</div>
+          <div class="radio-row selected"><span class="rd on"></span> Kindly draft it — we will review</div>
+          <div class="radio-row"><span class="rd"></span> Mix of both</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-btns"><div class="btn-back">Back</div><div class="btn-cont">Continue</div></div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 6: Social & Contact ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 6 — Social Media &amp; Contact Information</h2><div class="pg">Page 6 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Social Media &amp; Contact Information</div>
+    <div class="sec-desc">How the world reaches your school</div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">School address (as it should appear on the website) <span class="req">*</span></div>
+          <div class="field-textarea">25 Unity Close, Maitama District, Abuja, FCT, Nigeria</div>
+        </div>
+        <div class="field">
+          <div class="field-label">School phone number(s) <span class="req">*</span></div>
+          <div class="field-hint">Include all contact lines (office, admissions, WhatsApp)</div>
+          <div class="field-textarea">+234 809 123 4567<br>+234 703 987 6543</div>
+        </div>
+        <div class="field">
+          <div class="field-label">School email address <span class="req">*</span></div>
+          <div class="field-input">info@harmonyacademy.ng</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Which social media does the school use?</div>
+          <div class="cb-row checked"><span class="cb on">&#10003;</span> Facebook</div>
+          <div class="cond-box">
+            <div class="cond-label">Facebook URL:</div>
+            <div class="field-input">https://facebook.com/harmonyacademyng</div>
+          </div>
+          <div class="cb-row checked" style="margin-top:8px;"><span class="cb on">&#10003;</span> Instagram</div>
+          <div class="cond-box">
+            <div class="cond-label">Instagram URL:</div>
+            <div class="field-input">https://instagram.com/harmonyacademy_ng</div>
+          </div>
+          <div class="cb-row" style="margin-top:8px;"><span class="cb off"></span> YouTube</div>
+          <div class="cb-row"><span class="cb off"></span> Twitter / X</div>
+          <div class="cb-row"><span class="cb off"></span> TikTok</div>
+          <div class="cb-row"><span class="cb off"></span> LinkedIn</div>
+          <div class="cb-row"><span class="cb off"></span> None yet</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-btns"><div class="btn-back">Back</div><div class="btn-cont">Continue</div></div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 7: Technical ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 7 — Technical &amp; Backend Access</h2><div class="pg">Page 7 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Technical &amp; Backend Access</div>
+    <div class="sec-desc">Domain, hosting, and setup details</div>
+
+    <div class="callout callout-warn"><strong>🔒 Security Notice:</strong> Any login credentials you provide here are handled with strict confidentiality and used solely for the purpose of setting up your school website. We will never share your credentials with third parties. If you prefer, you can share access details directly via a secure channel (WhatsApp, phone call) instead of entering them here.</div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Do you have a domain name? <span class="req">*</span></div>
+          <div class="radio-row selected"><span class="rd on"></span> Yes — I own it and have login access</div>
+          <div class="radio-row"><span class="rd"></span> Yes — but someone else manages it</div>
+          <div class="radio-row"><span class="rd"></span> No — I need one registered</div>
+          <div class="radio-row"><span class="rd"></span> Not sure</div>
+          <div class="cond-box" style="margin-top:8px;">
+            <div class="cond-label">Domain name:</div>
+            <div class="field-input">harmonyacademy.ng</div>
+            <div class="cond-label" style="margin-top:8px;">Domain registrar (if known):</div>
+            <div class="field-input" style="color:#a0aec0;">e.g., GoDaddy, Namecheap, Whogohost, Qservers</div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field">
+          <div class="field-label">Do you have existing web hosting?</div>
+          <div class="radio-row"><span class="rd"></span> Yes</div>
+          <div class="radio-row selected"><span class="rd on"></span> No</div>
+          <div class="radio-row"><span class="rd"></span> Not sure</div>
+          <div class="callout callout-gold" style="margin-top:6px; font-size:10.5pt;"><strong>If "Yes":</strong> A field appears to enter your hosting provider (e.g., Whogohost, Qservers, Namecheap)</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Do you have existing school email addresses?</div>
+          <div class="radio-row"><span class="rd"></span> Yes — already configured</div>
+          <div class="radio-row"><span class="rd"></span> No — we need email setup</div>
+          <div class="radio-row selected"><span class="rd on"></span> Currently using Gmail / Yahoo</div>
+        </div>
+        <div class="field">
+          <div class="field-label">How do you prefer to share login credentials?</div>
+          <div class="radio-row selected"><span class="rd on"></span> I will share via WhatsApp / phone call</div>
+          <div class="radio-row"><span class="rd"></span> I will grant access from the dashboard directly</div>
+          <div class="radio-row"><span class="rd"></span> I need guidance on how to do this</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-btns"><div class="btn-back">Back</div><div class="btn-cont">Continue</div></div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+<!-- ===== PAGE 8: Timeline & Final ===== -->
+<div class="slide">
+  <div class="hdr"><h2>Page 8 — Timeline &amp; Final Details</h2><div class="pg">Page 8 of 8</div></div>
+  <div class="body">
+    <div class="sec-title">Timeline &amp; Final Details</div>
+    <div class="sec-desc">Almost done — just a few more details</div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="field">
+          <div class="field-label">When do you need the website live? <span class="req">*</span></div>
+          <div class="radio-row"><span class="rd"></span> Within 1 week</div>
+          <div class="radio-row selected"><span class="rd on"></span> Within 2 weeks</div>
+          <div class="radio-row"><span class="rd"></span> Within 1 month</div>
+          <div class="radio-row"><span class="rd"></span> No rush — whenever it is ready</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Who at the school will be the primary contact for this project? <span class="req">*</span></div>
+          <div class="field-input">Mrs. Ngozi Obi, Proprietress</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Who will update the website after launch?</div>
+          <div class="radio-row"><span class="rd"></span> We have someone in-house who will handle updates</div>
+          <div class="radio-row selected"><span class="rd on"></span> We would need Miraloyd to help with future updates</div>
+          <div class="radio-row"><span class="rd"></span> Not sure yet — we can discuss this later</div>
+          <div class="callout callout-gold" style="margin-top:6px; font-size:10.5pt;"><strong>If "in-house":</strong> A field appears to enter their name and role — e.g., Mr. John, Admin Officer</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Anything else you would like us to know?</div>
+          <div class="field-textarea">We would like the website to reflect our school values and provide an easy way for parents to access information. Mobile-friendly design is very important as most of our parents use smartphones.</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="field" style="margin-top:0;">
+          <div class="sec-title" style="font-size:14pt;">Data Protection &amp; Consent</div>
+          <div class="callout" style="margin-top:8px;">In compliance with the Nigeria Data Protection Act (NDPA) 2023, we collect the information in this form solely for the purpose of designing and building your school website. Your data will be handled with strict confidentiality, stored securely, and will not be shared with third parties without your consent. You may request access to, correction of, or deletion of your data at any time by contacting us at <strong>okosej@miraloyd.com</strong>.</div>
+          <div class="cb-row checked" style="margin-top:10px;"><span class="cb on">&#10003;</span> I consent to Miraloyd Global Consult Ltd collecting and processing the information provided in this form for the purpose of designing our school website. <span class="req">*</span></div>
+          <div class="cb-row checked" style="margin-top:4px;"><span class="cb on">&#10003;</span> I agree to be contacted by Miraloyd Global Consult Ltd regarding this project via phone, email, or WhatsApp.</div>
+        </div>
+        <div class="nav-btns" style="margin-top:20px;"><div class="btn-back">Back</div><div class="btn-submit">Submit</div></div>
+        <div class="autosave">&#10003; Progress saved</div>
+      </div>
+    </div>
+  </div>
+  <div class="ftr"><span>Filled Example — Miraloyd Global Consult Ltd</span><span>www.miraloyd.com</span></div>
+</div>
+
+</body>
+</html>
