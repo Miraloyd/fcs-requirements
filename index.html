@@ -460,6 +460,56 @@
             .question-card { padding: 16px; }
             .btn { padding: 12px 20px; font-size: 0.95rem; }
         }
+
+        /* Miraloyd Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: var(--radius);
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: modalIn 0.25s ease-out;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff;
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-header svg { flex-shrink: 0; }
+        .modal-body {
+            padding: 20px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+        .modal-footer {
+            padding: 12px 20px 16px;
+            text-align: right;
+        }
+        .modal-footer .btn {
+            min-width: 100px;
+        }
     </style>
 </head>
 <body>
@@ -1222,6 +1272,21 @@
         saveTimeout = setTimeout(saveData, 500);
     });
 
+    // Miraloyd Modal
+    function showMiraloydModal(message, type) {
+        const overlay = document.getElementById('miraloydModal');
+        const icon = type === 'error'
+            ? '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#fff" stroke-width="2"/><path d="M10 6v5M10 13.5v.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'
+            : '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#fff" stroke-width="2"/><path d="M6.5 10l2.5 2.5L13.5 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        document.getElementById('modalIcon').innerHTML = icon;
+        document.getElementById('modalMessage').innerHTML = message;
+        overlay.classList.add('active');
+    }
+
+    function closeMiraloydModal() {
+        document.getElementById('miraloydModal').classList.remove('active');
+    }
+
     // Submit
     function submitForm() {
         if (!validateCurrentPage()) return;
@@ -1246,7 +1311,10 @@
             method: 'POST',
             body: formData
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+        })
         .then(data => {
             if (data.success) {
                 // Show success
@@ -1258,15 +1326,32 @@
                 document.getElementById('progressText').textContent = 'Complete!';
                 localStorage.removeItem(STORAGE_KEY);
             } else {
-                throw new Error('Submission failed');
+                throw new Error(data.message || 'Submission failed');
             }
         })
         .catch(err => {
             btn.disabled = false;
             btn.textContent = 'Submit';
-            alert('There was an issue submitting. Kindly try again or contact us on WhatsApp at +234 (0) 911 598 4804.');
+            showMiraloydModal(
+                'There was an issue submitting your form. Kindly try again or contact us on WhatsApp at <strong>+234 (0) 911 598 4804</strong>.',
+                'error'
+            );
         });
     }
 </script>
+
+<!-- Miraloyd Modal -->
+<div class="modal-overlay" id="miraloydModal" onclick="if(event.target===this)closeMiraloydModal()">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span id="modalIcon"></span>
+            Miraloyd
+        </div>
+        <div class="modal-body" id="modalMessage"></div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="closeMiraloydModal()">OK</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
